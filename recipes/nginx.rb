@@ -40,4 +40,8 @@ template "nginx.conf.erb" do
   notifies :restart, resources(:service => "nginx"), :immediately
 end
 
-monitrc("nginx.monitrc") if node.recipes.include?('monit') and defined?(:monitrc)
+if node.recipes.include?('monit') and defined?(:monitrc)
+  monitrc "nginx.monitrc" do
+    template_cookbook "elasticsearch"
+  end
+end
