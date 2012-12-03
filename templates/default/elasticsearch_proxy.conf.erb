@@ -5,6 +5,10 @@ server {
   error_log   <%= node.elasticsearch[:nginx][:log_dir] %>/elasticsearch-errors.log;
   access_log  <%= node.elasticsearch[:nginx][:log_dir] %>/elasticsearch.log;
 
+<% unless node.elasticsearch[:nginx][:client_max_body_size].nil? %>
+  client_max_body_size <%= node.elasticsearch[:nginx][:client_max_body_size] %>;
+<% end %>
+
   location / {
 
     # Deny Nodes Shutdown API
