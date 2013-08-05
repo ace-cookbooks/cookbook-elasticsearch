@@ -48,14 +48,19 @@ module Extensions
           options[:type] = params[:ebs][:type] if params[:ebs][:type]
           options[:iops] = params[:ebs][:iops] if params[:ebs][:iops] and params[:ebs][:type] == "io1"
 
-          if params[:ebs][:snapshot_id]
-            if snapshot = aws.snapshots.get(params[:ebs][:snapshot_id])
+          if params[:ebs][:snapshot_id] || params[:ebs][:snapshot_ids]
+            snapshot_id = if params[:ebs][:snapshot_ids]
+              params[:ebs][:snapshot_ids][node.name]
+            else
+              params[:ebs][:snapshot_id]
+            end
+            if snapshot_id != nil && snapshot = aws.snapshots.get(snapshot_id)
               Chef::Log.info "Creating EBS from snapshot: #{snapshot.id} (" +
                              "Tags: #{snapshot.tags.inspect}, "             +
                              "Description: #{snapshot.description})"
               options[:snapshot_id] = snapshot.id
             else
-              __message = "[!] Cannot find snapshot: #{params[:ebs][:snapshot_id]}"
+              __message = "[!] Cannot find snapshot: #{snapshot_id}"
               Chef::Log.fatal __message
               raise __message
             end
