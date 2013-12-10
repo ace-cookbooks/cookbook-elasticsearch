@@ -54,7 +54,9 @@ module Extensions
             else
               params[:ebs][:snapshot_id]
             end
-            if snapshot_id != nil && snapshot = aws.snapshots.get(snapshot_id)
+            if snapshot_id == 'none'
+              Chef::Log.info "Skipping snapshot while creating EBS volume"
+            elsif snapshot_id != nil && snapshot = aws.snapshots.get(snapshot_id)
               Chef::Log.info "Creating EBS from snapshot: #{snapshot.id} (" +
                              "Tags: #{snapshot.tags.inspect}, "             +
                              "Description: #{snapshot.description})"
